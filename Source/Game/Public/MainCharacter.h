@@ -44,4 +44,14 @@ public:
 	void Jumping();
 	void Look(const FInputActionValue& Value);
 	void Move(const FInputActionValue& Value);
+
+	void StartTimedPowerUp();
+	void EndTimedPowerUp();
+
+	void StartLoopedPowerUp();
+	void EndLoopedPowerUp();
+
+	FTimerHandle TimerHandle;
+	FTimerHandle LoopedTimerHandle;
+	int32 TimedLoopsRemaining;
 };

@@ -91,3 +91,32 @@ void AMainCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
 }
+
+void AMainCharacter::StartTimedPowerUp()
+{
+	GLog->Log("Power up started!");
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMainCharacter::EndTimedPowerUp, 1.0f, false, 5.0f);
+}
+
+void AMainCharacter::EndTimedPowerUp()
+{
+	GLog->Log("Power up ended...");
+}
+
+void AMainCharacter::StartLoopedPowerUp()
+{
+	GLog->Log("Looped Power up started!");
+	GetWorldTimerManager().ClearTimer(LoopedTimerHandle);
+	TimedLoopsRemaining = 5;
+	GetWorldTimerManager().SetTimer(LoopedTimerHandle, this, &AMainCharacter::EndLoopedPowerUp, 1.0f, true, 1.0f);
+}
+
+void AMainCharacter::EndLoopedPowerUp()
+{
+	GLog->Log(FString::FromInt(TimedLoopsRemaining));
+	if (--TimedLoopsRemaining < 0)
+	{
+		GetWorldTimerManager().ClearTimer(LoopedTimerHandle);
+		GLog->Log("Looped Power completed.");
+	}
+}
