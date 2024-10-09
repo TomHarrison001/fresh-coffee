@@ -25,19 +25,19 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	/** Mapping Context file */
+	// Mapping Context file
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
+	// Jump Input Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputAction* JumpAction;
 
-	/** Look Input Action */
+	// Look Input Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputAction* LookAction;
 
-	/** Move Input Action */
+	// Move Input Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputAction* MoveAction;
 
@@ -54,4 +54,20 @@ public:
 	FTimerHandle TimerHandle;
 	FTimerHandle LoopedTimerHandle;
 	int32 TimedLoopsRemaining;
+
+	// Jump Player 2 Input Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* JumpActionPlayer2;
+
+	// Move Player 2 Input Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveActionPlayer2;
+
+	void JumpingPlayer2();
+	void MovePlayer2(const FInputActionValue& Value);
+
+	AMainCharacter* Player2Char;
+
+	APlayerController* Player1Cont;
+	APlayerController* Player2Cont;
 };
