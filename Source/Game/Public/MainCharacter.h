@@ -55,6 +55,8 @@ public:
 	FTimerHandle LoopedTimerHandle;
 	int32 TimedLoopsRemaining;
 
+	// Splitscreen Attributes
+	/*
 	// Jump Player 2 Input Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	class UInputAction* JumpActionPlayer2;
@@ -70,4 +72,12 @@ public:
 
 	APlayerController* Player1Cont;
 	APlayerController* Player2Cont;
+	*/
+
+	// LAN Multiplayer Attributes
+	UFUNCTION(BlueprintCallable)
+	void CallCreateLobby();
+
+	UFUNCTION(BlueprintCallable)
+	void CallClientTravel(const FString& Address);
 };

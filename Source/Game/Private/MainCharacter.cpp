@@ -16,7 +16,6 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*
 	// Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -25,8 +24,8 @@ void AMainCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	*/
 
+	/*
 	Player2Cont = UGameplayStatics::GetPlayerController(GetWorld(), 1);
 	Player2Char = Cast<AMainCharacter>(Player2Cont->GetPawn());
 	// Add Input Mapping Context
@@ -38,6 +37,7 @@ void AMainCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+	*/
 }
 
 // Called every frame
@@ -62,10 +62,10 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 
 		// Jumping Player 2
-		EnhancedInputComponent->BindAction(JumpActionPlayer2, ETriggerEvent::Triggered, this, &AMainCharacter::JumpingPlayer2);
+		//EnhancedInputComponent->BindAction(JumpActionPlayer2, ETriggerEvent::Triggered, this, &AMainCharacter::JumpingPlayer2);
 
 		// Moving Player 2
-		EnhancedInputComponent->BindAction(MoveActionPlayer2, ETriggerEvent::Triggered, this, &AMainCharacter::MovePlayer2);
+		//EnhancedInputComponent->BindAction(MoveActionPlayer2, ETriggerEvent::Triggered, this, &AMainCharacter::MovePlayer2);
 	}
 }
 
@@ -139,6 +139,7 @@ void AMainCharacter::EndLoopedPowerUp()
 	}
 }
 
+/*
 void AMainCharacter::JumpingPlayer2()
 {
 	if (Controller != Player2Cont)
@@ -166,5 +167,23 @@ void AMainCharacter::MovePlayer2(const FInputActionValue& Value)
 		// add movement 
 		Player2Char->AddMovementInput(ForwardDirection, MovementVector.Y);
 		Player2Char->AddMovementInput(RightDirection, MovementVector.X);
+	}
+}
+*/
+
+void AMainCharacter::CallCreateLobby()
+{
+	UWorld* World = GetWorld();
+	{
+		World->ServerTravel("/Game/Levels/DefaultLevel?listen");
+	}
+}
+
+void AMainCharacter::CallClientTravel(const FString& Address)
+{
+	APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+	if (PlayerController)
+	{
+		PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 	}
 }
