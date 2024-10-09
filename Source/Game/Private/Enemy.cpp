@@ -8,7 +8,8 @@ AEnemy::AEnemy()
 
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	StaticMesh->SetCollisionResponseToAllChannels(ECR_Block); // Set collision to block
+	//StaticMesh->SetCollisionResponseToAllChannels(ECR_Block); // Set collision to block
+	StaticMesh->BodyInstance.SetCollisionProfileName(TEXT("Enemy")); // Calls Enemy Preset
 	StaticMesh->BodyInstance.SetInstanceNotifyRBCollision(true); // Enables hit events
 	StaticMesh->AttachToComponent(DefaultSceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
 	StaticMesh->OnComponentHit.AddDynamic(this, &AEnemy::OnHit); // Register Hit Event to function
