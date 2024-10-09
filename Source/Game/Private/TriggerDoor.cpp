@@ -45,7 +45,7 @@ void UTriggerDoor::GetAllValidActors(float DeltaTime)
 				{
 					OpenDoor(DeltaTime);
 				}
-				GLog->Log(Tag.ToString());
+				//GLog->Log(Tag.ToString());
 			}
 		}
 	}

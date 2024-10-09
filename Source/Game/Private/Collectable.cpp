@@ -36,7 +36,8 @@ void ACollectable::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 	if (Cast<AMainCharacter>(OtherActor))
 	{
 		AMainCharacter* MainChar = Cast<AMainCharacter>(OtherActor);
-		MainChar->StartTimedPowerUp();
+		//MainChar->StartTimedPowerUp();
+		MainChar->StartLoopedPowerUp();
 		Destroy();
 	}
 }
