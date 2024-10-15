@@ -106,4 +106,11 @@ public:
 	
 	// Called for Shoot input
 	void Shoot();
+
+	// Save Data functions
+	UFUNCTION(BlueprintCallable)
+	void SaveGame();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadGame();
 };

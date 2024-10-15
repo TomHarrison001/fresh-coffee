@@ -3,6 +3,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include <Kismet/GameplayStatics.h>
+#include "ShooterSaveGame.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -259,4 +260,24 @@ void AMainCharacter::Shoot()
 			}
 		}
 	}
+}
+
+void AMainCharacter::SaveGame()
+{
+	UShooterSaveGame* SaveGameInstance = Cast<UShooterSaveGame>(UGameplayStatics::CreateSaveGameObject(UShooterSaveGame::StaticClass()));
+
+	SaveGameInstance->WorldLocation = GetActorLocation();
+	SaveGameInstance->WorldRotation = GetActorRotation();
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SlotName, SaveGameInstance->SlotIndex);
+}
+
+void AMainCharacter::LoadGame()
+{
+	UShooterSaveGame* LoadGameInstance = Cast<UShooterSaveGame>(UGameplayStatics::CreateSaveGameObject(UShooterSaveGame::StaticClass()));
+
+	LoadGameInstance = Cast<UShooterSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SlotName, LoadGameInstance->SlotIndex));
+
+	SetActorLocation(LoadGameInstance->WorldLocation);
+	SetActorRotation(LoadGameInstance->WorldRotation);
 }
