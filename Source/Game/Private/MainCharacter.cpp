@@ -9,6 +9,25 @@ AMainCharacter::AMainCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Create a first person camera component
+	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+
+	// Attach the camera component to our capsule component
+	FPSCameraComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
+
+	// Position the camera slightly above the eyes
+	FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
+
+	// Enable the pawn to control camera rotation
+	FPSCameraComponent->bUsePawnControlRotation = true;
+
+	// Create a first person mesh component for the owning player
+	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	check(FPSMesh != nullptr);
+
+	// Attach the FPS mesh to the FPS camera
+	FPSMesh->SetupAttachment(FPSCameraComponent);
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +57,17 @@ void AMainCharacter::BeginPlay()
 		}
 	}
 	*/
+
+	// Disable some environmental shadows to preserve illusion of single mesh
+	if (FPSMesh != nullptr)
+	{
+		FPSMesh->bCastDynamicShadow = false;
+		FPSMesh->CastShadow = false;
+		FPSMesh->SetOnlyOwnerSee(true); // Only the owning player sees this mesh
+	}
+
+	// The owning player doesn't see the regular (third-person) body mesh
+	GetMesh()->SetOwnerNoSee(true);
 }
 
 // Called every frame
@@ -66,6 +96,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		// Moving Player 2
 		//EnhancedInputComponent->BindAction(MoveActionPlayer2, ETriggerEvent::Triggered, this, &AMainCharacter::MovePlayer2);
+
+		// Shoot
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &AMainCharacter::Shoot);
 	}
 }
 
@@ -185,5 +218,45 @@ void AMainCharacter::CallClientTravel(const FString& Address)
 	if (PlayerController)
 	{
 		PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+	}
+}
+
+void AMainCharacter::Shoot()
+{
+	// Attempt to shoot a projectile
+	if (ProjectileClass)
+	{
+		// Get the camera transform
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+		// Set MuzzleOffset to spawn projectiles slightly in front of the camera
+		MuzzleOffset.Set(100.0f, 0.0f, 50.0f);
+
+		// Transform MuzzleOffset from camera space to world space
+		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+
+
+		FRotator MuzzleRotation = CameraRotation;
+		// Skew the aim to be slightly upwards if required
+		// MuzzleRotation.Pitch += 5.0f;
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = GetInstigator();
+
+			// Spawn the projectile at the muzzle
+			AFPSProjectile* Projectile = World->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+			if (Projectile)
+			{
+				// Set the projectile's initial trajectory
+				FVector LaunchDirection = MuzzleRotation.Vector();
+				Projectile->FireInDirection(LaunchDirection);
+			}
+		}
 	}
 }

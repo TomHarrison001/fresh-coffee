@@ -2,7 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "InputActionValue.h"
+#include "FPSProjectile.h"
 #include "MainCharacter.generated.h"
 
 UCLASS()
@@ -80,4 +83,27 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CallClientTravel(const FString& Address);
+
+	// FPS camera
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UCameraComponent* FPSCameraComponent;
+
+	// First-person mesh (arms), visible only to the owning player
+	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
+	USkeletalMeshComponent* FPSMesh;
+
+	// Jump Input Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	class UInputAction* ShootAction;
+
+	// Gun muzzle offset from the camera location
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+	FVector MuzzleOffset;
+
+	// Projectile class to spawn
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<class AFPSProjectile> ProjectileClass;
+	
+	// Called for Shoot input
+	void Shoot();
 };
