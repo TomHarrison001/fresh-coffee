@@ -4,6 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include <Kismet/GameplayStatics.h>
 #include "ShooterSaveGame.h"
+#include "Gun.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -11,24 +12,30 @@ AMainCharacter::AMainCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	/*
 	// Create a first person camera component
 	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-
 	// Attach the camera component to our capsule component
 	FPSCameraComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
-
 	// Position the camera slightly above the eyes
 	FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
-
 	// Enable the pawn to control camera rotation
 	FPSCameraComponent->bUsePawnControlRotation = true;
-
 	// Create a first person mesh component for the owning player
 	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
 	check(FPSMesh != nullptr);
-
 	// Attach the FPS mesh to the FPS camera
 	FPSMesh->SetupAttachment(FPSCameraComponent);
+	*/
+
+	// Create a Spring Arm Component
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	//Spring Arm Component is attached to Mesh
+	SpringArmComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
+	// Create a Third person camera component.
+	TPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
+	//Attach CameraComponent as a child of Spring Arm
+	TPSCameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +66,7 @@ void AMainCharacter::BeginPlay()
 	}
 	*/
 
+	/*
 	// Disable some environmental shadows to preserve illusion of single mesh
 	if (FPSMesh != nullptr)
 	{
@@ -69,6 +77,31 @@ void AMainCharacter::BeginPlay()
 
 	// The owning player doesn't see the regular (third-person) body mesh
 	GetMesh()->SetOwnerNoSee(true);
+	*/
+
+	if (SpringArmComponent != nullptr)
+	{
+		//Set Location and Rotation
+		SpringArmComponent->SetRelativeLocation(FVector(0.0f, 70.0f, 100.0f));
+		SpringArmComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+
+		// Set how far away from character
+		SpringArmComponent->TargetArmLength = 250.0f;
+		// Set camera lag behaviour
+		SpringArmComponent->bEnableCameraLag = true;
+		SpringArmComponent->CameraLagSpeed = 10.0f;
+	}
+
+	if (TPSCameraComponent != nullptr)
+	{
+		// Camera pawn rotation must be enabled to allow player to move camera
+		TPSCameraComponent->bUsePawnControlRotation = true;
+	}
+
+	//Gun Code
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("GunSocket"));
+	Gun->SetOwner(this);
 }
 
 // Called every frame

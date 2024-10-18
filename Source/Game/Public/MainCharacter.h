@@ -6,7 +6,10 @@
 #include "Components/CapsuleComponent.h"
 #include "InputActionValue.h"
 #include "FPSProjectile.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "MainCharacter.generated.h"
+
+class AGun;
 
 UCLASS()
 class GAME_API AMainCharacter : public ACharacter
@@ -113,4 +116,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadGame();
+
+	// TPS camera
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UCameraComponent* TPSCameraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArmComponent;
+
+	// Gun
+	UPROPERTY(EditDefaultsOnly) // Not editable in run time
+	TSubclassOf<AGun> GunClass;
+
+	UPROPERTY()
+	AGun* Gun;
 };
